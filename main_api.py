@@ -35,7 +35,6 @@ def receive_data():
 @app.route("/gta-api-test", methods=["POST"])
 def receive_data_test():
     content = request.json
-    received_data.append([np.array(content["screen"]), content["output"]])
     now = time.time()
     return "{}".format(now-content["time"]), status.HTTP_200_OK
 
