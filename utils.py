@@ -1,4 +1,4 @@
-import time, os, threading
+import time, os, threading, argparse
 import numpy as np
 
 class Cabinet(object):
@@ -34,8 +34,7 @@ class Cabinet(object):
             self.thread_handle.join()
             self.thread_handle = None
             print("Joined thread")
-        else:
-            print("Failed to find thread")
+        print("Cabinet shutting down")
 
 
     def register_values(self,identifier, counter, split_at):
@@ -84,3 +83,20 @@ class Cabinet(object):
                 print("Thread running")
         else:
             print("Values not registered")
+
+
+def arg_creator(service):
+    parser = argparse.ArgumentParser(description='Capture training data, press ctrl+q to stop recording')
+    if service == "simple_socket":
+        parser.add_argument("socket", type=str, help="Type of socket to run: 'server' or 'client'")
+        parser.add_argument("identifier", type=str, help='An identifier for training data file')
+        parser.add_argument("--r", "--resume", type=int, help="Number of file name to write to")
+        parser.add_argument("--sa", "--split-at", type=int,
+        help="Number that defines max len for the data, whenever this is reached the file is saved and a new one is created")
+    parser.add_argument("--ip", type=str, help="The ip address to connect to")
+    parser.add_argument("--port", type=int, help="The port used")
+    # TODO: check if --ip has the structure of an ip prob use regex
+    # TODO: check if --port is a positive integer(same for --sa and --r) and a non-privileged port > 1023 or 24
+    args = parser.parse_args()
+    print(args)
+    return args

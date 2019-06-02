@@ -114,13 +114,13 @@ class SocketMaker(object):
                                 full_msg = b""
 
 if __name__ == '__main__':
-    args = arg_creator()
+    args = arg_creator("simple_socket")
     hst = args.ip or "127.0.0.1"
     prt = args.port or 2890
     counter = args.r or 0
     split_at = args.sa or 2000
-    all_values = "\tType: %s\n\tID: %s\n\thost: %s\n\tport: %s\n\tcounter: %s\n\tsplit: %s" % (args.socket, args.identifier,hst,prt,counter,split_at)
-    print("Initializing client in 3 seconds with values:\n%s" % all_values)
+    all_values = "\tID: %s\n\thost: %s\n\tport: %s\n\tcounter: %s\n\tsplit: %s" % (args.identifier,hst,prt,counter,split_at)
+    print("Initializing %s in 3 seconds with values:\n%s" % (args.socket,all_values))
     time.sleep(3.5)
     try:
         SocketMaker(args.identifier, counter,split_at,port=prt,host=hst).run_socket(args.socket)
