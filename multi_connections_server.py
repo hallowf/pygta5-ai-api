@@ -1,4 +1,5 @@
 import socket, select, pickle, time
+import numpy as np
 
 from utils import Cabinet, arg_creator
 
@@ -30,6 +31,7 @@ class MultiSocketServer(object):
     def bind_interface(self):
         self.server_socket.bind((self.host,self.port))
         self.server_socket.listen()
+        print("Server intitialized")
 
     # Check if the message has been fully received, if not recurse until the lenght matches
     def match_length(self, client_socket, message_length, full_msg):
@@ -115,7 +117,11 @@ class MultiSocketServer(object):
                     username, _, _ = user_identifier.split(":")
                     print(f"Received message from {username}")
                     # print("final len:",len(message["data"]))
-                    received = pickle.loads(message["data"])
+                    data = pickle.loads(message["data"])
+                    try:
+                        self.client_cabinets[notified_socket].received_data.append([np.array(data["screen"]), data["output"]])
+                    except Exception as e:
+                        print(e)
 
                     for client_socket in self.clients_list:
                         # if client is who sent message answer ok

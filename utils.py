@@ -17,31 +17,34 @@ class Cabinet(object):
         self.exit_save = False
 
     def __del__(self):
-        if self.identifier and not self.exit_save:
-            self.counter += 1
-            self.file_name = "training/training_data_%s%s.npy" % (self.identifier, self.counter)
-            if len(self.received_data) > 100:
-                print("Found identifier and data saving file: %s" % self.file_name)
-                np.save(self.file_name,self.received_data)
-            else:
-                print("Not enough data to save")
-            self.exit_save = True
-        if self.is_running:
-            print("Switching is_running to False")
-            self.is_running = False
-        if self.thread_handle != None:
-            print("Trying to join thread")
-            self.thread_handle.join()
-            self.thread_handle = None
-            print("Joined thread")
+        has_shutdown = False
+        while not has_shutdown:
+            has_shutdown = True if (self.exit_save and not self.is_running and not self.thread_handle) else False
+            if self.identifier and not self.exit_save:
+                self.counter += 1
+                self.file_name = "training/training_data_%s%s.npy" % (self.identifier, self.counter)
+                if len(self.received_data) > 100:
+                    print("Found identifier and data saving file: %s" % self.file_name)
+                    np.save(self.file_name,self.received_data)
+                else:
+                    print("Not enough data to save")
+                self.exit_save = True
+            if self.is_running:
+                print("Switching is_running to False")
+                self.is_running = False
+            if self.thread_handle != None:
+                print("Trying to join thread")
+                self.thread_handle.join()
+                self.thread_handle = None
+                print("Joined thread")
         print("Cabinet shutting down")
 
 
     def register_values(self,identifier, counter, split_at):
         if not self.values_registered:
-            self.split_at = split_at
+            self.split_at = int(split_at)
+            self.counter = int(counter)
             self.values_registered = True
-            self.counter = counter
             self.identifier = identifier
             self.file_name = "training/training_data_%s%s.npy" % (identifier, self.counter)
             print("file_name: %s" % self.file_name)
